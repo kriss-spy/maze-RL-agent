@@ -13,7 +13,7 @@ def main():
         [-1, 0, 0, "e"],
     ]
     maze = env.Maze(default_maze_matrix)
-    maze_agent = agent.Agent()
+    maze_agent = agent.Agent(maze.get_begin())
 
     # Settings dictionary
     default_settings = {
