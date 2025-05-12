@@ -27,10 +27,12 @@ def train_agent(maze: Maze, maze_agent: Agent, settings):  # TODO check
     for episode in range(episodes):
         # Reset maze to initial state for new episode
         # But keep the same agent instance to preserve the Q-table
-        maze = maze.__class__(original_matrix, settings)
+        current_maze = maze.__class__(
+            original_matrix, settings
+        )  # Use a different variable name
 
         # Let the agent walk through the maze and learn
-        returns = maze_agent.walk(maze)
+        returns = maze_agent.walk(current_maze)  # Pass the reset maze
 
         # Track best performance and calculate average
         if returns > best_returns:
@@ -41,9 +43,12 @@ def train_agent(maze: Maze, maze_agent: Agent, settings):  # TODO check
         # Print progress periodically
         if (episode + 1) % 100 == 0:
             helper.log_info(
-                f"Episode {episode + 1}/{episodes} - Avg returns: {avg_returns:.2f}, Best: {best_returns:.2f}"
+                f"Episode {episode + 1}/{episodes} - Avg returns: {avg_returns:.2f}, Best: {best_returns:.2f}, Exploration: {maze_agent.exploration_rate:.3f}"
             )
             helper.print_q_table(maze_agent.q_table)
+
+        # Decay exploration rate
+        maze_agent.decay_exploration_rate(episode, episodes)
 
     helper.log_success(
         f"Training complete! Final avg returns: {avg_returns:.2f}, Best: {best_returns:.2f}"

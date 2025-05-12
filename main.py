@@ -20,10 +20,12 @@ def main(
     default_settings = {
         "learning_rate": 0.1,  # alpha
         "discount_factor": 0.9,  # gamma
-        "exploration_rate": 0.5,  # epsilon
+        "exploration_rate": 1.0,  # epsilon - start high
+        "exploration_decay_rate": 0.995,  # Epsilon decay rate per episode
+        "min_exploration_rate": 0.01,  # Minimum epsilon
         "episodes": 1000,
-        "batch_size": 100,
-        "default_value": 0,
+        "batch_size": 100,  # Not currently used in the Q-learning logic directly
+        "default_value": 0,  # Default Q-value for unseen state-action pairs
         "end_reward": 10,
         "step_cost": -0.5,
     }
