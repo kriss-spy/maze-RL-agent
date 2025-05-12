@@ -6,12 +6,14 @@ class Maze:
     begin_pos = ()
     end_pos = ()
     agent_pos = ()
+    end_reward = 0
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, settings):
         self.maze_matrix = matrix
         self.begin_pos = self.find_begin(self.maze_matrix)
         self.end_pos = self.find_end(self.maze_matrix)
         self.agent_pos = self.begin_pos
+        self.end_reward = settings["end_reward"]
 
     def get_matrix(self):
         return self.maze_matrix
@@ -51,5 +53,10 @@ class Maze:
 
     def step(self, action):
         reward = 0
-        # TODO implement step
+        self.agent_pos = (self.agent_pos[0] + action[0], self.agent_pos[1] + action[1])
+        foo = self.maze_matrix[self.agent_pos[0]][self.agent_pos[1]]
+        reward = self.end_reward if foo == "e" else foo
         return reward
+
+    def state(self):
+        return self  # assume that env (containing maze_matrix and agent_pos) is state

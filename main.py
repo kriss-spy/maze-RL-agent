@@ -12,15 +12,18 @@ def main():
         [0, 0, 0, 1],
         [-1, 0, 0, "e"],
     ]
-    maze = env.Maze(default_maze_matrix)
-    maze_agent = agent.Agent(maze.get_begin())
+    maze = env.Maze(default_maze_matrix, settings)
+    maze_agent = agent.Agent(settings)
 
     # Settings dictionary
     default_settings = {
-        "learning_rate": 0.1,
-        "discount_factor": 0.9,
-        "exploration_rate": 0.3,
+        "learning_rate": 0.1,  # alpha
+        "discount_factor": 0.9,  # gamma
+        "exploration_rate": 0.3,  # epsilon
         "episodes": 1000,
+        "batch_size": 100,
+        "default_value": 0,
+        "end_reward": 10,
     }
 
     settings = default_settings
@@ -51,15 +54,15 @@ def main():
             # Reset settings to default
             settings = default_settings
             helper.log_success("Settings reset to default values")
-            maze = env.Maze(default_maze_matrix)
-            maze_agent = agent.Agent()
+            maze = env.Maze(default_maze_matrix, settings)
+            maze_agent = agent.Agent(settings)
 
         elif key == "a":
             # Auto run all steps
             helper.log_info("Auto-running all steps...")
             # Create fresh maze for auto run
             train.train_agent(maze, agent)
-            maze_agent.walk(maze)
+            maze_agent.inf_walk(maze)
 
         elif key == "m":
             # Input customized maze
@@ -71,13 +74,13 @@ def main():
             # Train agent - placeholder for future implementation
             helper.print_header("Training Agent")
             helper.log_info("Agent training functionality will be implemented later")
-            train.train_agent(maze, agent)
+            train.train_agent(maze, agent, settings)
 
         elif key == "d":
             # Show agent navigating the maze - placeholder for future implementation
             helper.print_header("Agent Navigation Demo")
             helper.log_info("Agent navigation demo will be implemented later")
-            maze_agent.walk(maze)
+            maze_agent.inf_walk(maze)
 
         elif key == "q":
             # Quit program
