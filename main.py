@@ -4,16 +4,17 @@ import agent
 import train
 
 
-def main():
-    # Initialize default maze
-    default_maze_matrix = [
-        ["b", 0, 0, 1],
+def main(
+    default_maze_matrix=[
+        ["b", 0, 0, 0],
         [0, -1, 0, -1],
-        [0, 0, 0, 1],
+        [0, 0, 0, -1],
         [-1, 0, 0, "e"],
     ]
-    maze = env.Maze(default_maze_matrix, settings)
-    maze_agent = agent.Agent(settings)
+):
+    # Initialize default maze
+
+    # default_maze_matrix = [["e", -1, -2], [0, -3, -4], [0, 0, "b"]]
 
     # Settings dictionary
     default_settings = {
@@ -27,6 +28,9 @@ def main():
     }
 
     settings = default_settings
+
+    maze = env.Maze(default_maze_matrix, settings)
+    maze_agent = agent.Agent(settings)
 
     # Display welcome message
     helper.print_welcome()
@@ -67,7 +71,7 @@ def main():
         elif key == "m":
             # Input customized maze
             custom_maze_matrix = helper.input_maze()
-            maze = env.Maze(custom_maze_matrix)
+            maze = env.Maze(custom_maze_matrix, settings)
             helper.log_success("Custom maze created and set")
 
         elif key == "t":
@@ -84,12 +88,47 @@ def main():
 
         elif key == "q":
             # Quit program
-            helper.quit()
             running = False
 
         else:
             helper.log_warning(f"Unknown command: '{key}'. Press 'h' for help.")
 
+    helper.quit()
+
+
+def test():
+    test_case_1 = [
+        ["b", 0, -1, 0],
+        [0, -1, 1, 0],
+        [0, 2, 0, 0],
+        [-1, 0, 0, "e"],
+    ]
+    main(test_case_1)
+
+    test_case_2 = [
+        ["b", -1, 0, 0],
+        [0, 0, -1, 0],
+        [1, 0, 2, -1],
+        [0, 0, 0, "e"],
+    ]
+    main(test_case_2)
+
+    test_case_3 = [
+        ["b", 1, 0, -1],
+        [0, -1, -1, 0],
+        [0, 2, 0, 0],
+        [2, 0, -1, "e"],
+    ]
+    main(test_case_3)
+    test_case_4 = [
+        ["b", 0, 0, 0],
+        [-1, 1, 0, 2],
+        [0, -1, -1, 0],
+        [0, 0, 0, "e"],
+    ]
+    main(test_case_4)
+
 
 if __name__ == "__main__":  # Fixed the condition
     main()
+    # test()
