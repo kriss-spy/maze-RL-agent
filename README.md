@@ -4,7 +4,17 @@ use RL to train an agent to navigate a simple maze
 
 ## usage
 
-## goal
+```python
+python main.py
+```
+
+## demo
+
+![demo1](doc/demo1.png)
+
+![demo2](doc/demo2.png)
+
+## task
 
 HUST AI Intro couse lab optional project
 
@@ -20,9 +30,7 @@ b 0 0 0
 
 from point b to point e, -1 represents obstacle
 
-
-## analysis
-
+## basic analysis
 
 agent: maze-agent, doesn't have prior knowledge, goal is to reach goal point, can't go back to visited point
 environment: maze matrix, start point, goal point, obstacles
@@ -31,11 +39,9 @@ state: agent pos + maze
 action: go left/up/right/down
 reward: +10 if arrive at goal point, -1 if hit obstacle
 
-
 ## design
 
 class agent...
-
 
 class maze...
 
@@ -51,6 +57,17 @@ class maze...
 
 ## solution
 
+Q-learning
+
 ## result
 
+it just works
+
+not bad cli program
+
 ## review
+
+cli programming, interesting
+for the most part, I coded by myself
+LLM helped a lot in debugging
+a lot more to learn

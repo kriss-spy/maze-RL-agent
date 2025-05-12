@@ -3,7 +3,7 @@ from env import Maze
 from agent import Agent
 
 
-def train_agent(maze: Maze, maze_agent: Agent, settings):  # TODO check
+def train_agent(maze: Maze, maze_agent: Agent, settings, verbose=False):
     """
     Train the agent using Q-learning
 
@@ -32,7 +32,7 @@ def train_agent(maze: Maze, maze_agent: Agent, settings):  # TODO check
         )  # Use a different variable name
 
         # Let the agent walk through the maze and learn
-        returns = maze_agent.walk(current_maze)  # Pass the reset maze
+        returns = maze_agent.walk(current_maze, verbose)  # Pass the reset maze
 
         # Track best performance and calculate average
         if returns > best_returns:
