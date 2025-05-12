@@ -7,6 +7,7 @@ class Maze:
     end_pos = ()
     agent_pos = ()
     end_reward = 0
+    step_cost = 0
     visited_set = set()
     visited_stack = []
 
@@ -16,9 +17,12 @@ class Maze:
         self.end_pos = self.find_end()
         self.agent_pos = self.begin_pos
         self.end_reward = settings["end_reward"]
+        self.step_cost = settings["step_cost"]
         self.visited_set = set()
         self.visited_stack = []
-        self.update_visited((0, 0))
+        # Add the beginning position to visited set (not hardcoded to 0,0)
+        self.visited_set.add(self.begin_pos)
+        self.visited_stack.append(self.begin_pos)
 
     def get_matrix(self):
         return self.maze_matrix
@@ -61,7 +65,7 @@ class Maze:
         reward = 0
         self.agent_pos = (self.agent_pos[0] + action[0], self.agent_pos[1] + action[1])
         foo = self.at(self.agent_pos)
-        reward = self.end_reward if foo == "e" else foo
+        reward = self.end_reward if foo == "e" else self.step_cost
         return reward
 
     def state(self):

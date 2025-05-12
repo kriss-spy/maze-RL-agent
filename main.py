@@ -20,16 +20,18 @@ def main(
     default_settings = {
         "learning_rate": 0.1,  # alpha
         "discount_factor": 0.9,  # gamma
-        "exploration_rate": 0.3,  # epsilon
-        "episodes": 10000,
-        "batch_size": 1000,
+        "exploration_rate": 0.5,  # epsilon
+        "episodes": 1000,
+        "batch_size": 100,
         "default_value": 0,
         "end_reward": 10,
+        "step_cost": -0.5,
     }
 
     settings = default_settings
+    maze_matrix = default_maze_matrix
 
-    maze = env.Maze(default_maze_matrix, settings)
+    maze = env.Maze(maze_matrix, settings)
     maze_agent = agent.Agent(settings)
 
     # Display welcome message
@@ -57,33 +59,43 @@ def main(
         elif key == "r":
             # Reset settings to default
             settings = default_settings
+            maze_matrix = default_maze_matrix
             helper.log_success("Settings reset to default values")
-            maze = env.Maze(default_maze_matrix, settings)
+            maze = env.Maze(maze_matrix, settings)
             maze_agent = agent.Agent(settings)
 
         elif key == "a":
             # Auto run all steps
             helper.log_info("Auto-running all steps...")
-            # Create fresh maze for auto run
-            train.train_agent(maze, agent, settings)
+
+            helper.print_header("Training Agent")
+            train.train_agent(maze, maze_agent, settings)
+
+            helper.print_header("Agent Navigation")
+            maze = env.Maze(maze_matrix, settings)
             maze_agent.inf_walk(maze)
 
         elif key == "m":
             # Input customized maze
-            custom_maze_matrix = helper.input_maze()
-            maze = env.Maze(custom_maze_matrix, settings)
+            maze_matrix = helper.input_maze()
+            maze = env.Maze(maze_matrix, settings)
             helper.log_success("Custom maze created and set")
 
         elif key == "t":
             # Train agent
             helper.print_header("Training Agent")
-            helper.log_info("Agent training functionality will be implemented later")
             train.train_agent(maze, maze_agent, settings)
 
-        elif key == "d":
+        elif key == "w":
+            # Run one turn with learning
+            helper.print_header("Agent Walk")
+            maze = env.Maze(maze_matrix, settings)
+            maze_agent.walk(maze, verbose=True)
+
+        elif key == "i":
             # Show agent navigating the maze
-            helper.print_header("Agent Navigation Demo")
-            helper.log_info("Agent navigation demo will be implemented later")
+            helper.print_header("Agent Navigation")
+            maze = env.Maze(maze_matrix, settings)
             maze_agent.inf_walk(maze)
 
         elif key == "q":

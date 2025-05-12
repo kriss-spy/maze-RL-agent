@@ -1,5 +1,6 @@
 import helper
 import random
+from env import Maze
 
 
 class Agent:
@@ -9,6 +10,7 @@ class Agent:
     default_value = 0
     discount_factor = 0
     learning_rate = 0
+    steps = 0
 
     def __init__(self, settings):
         self.action_list = [(-1, 0), (0, 1), (1, 0), (0, -1)]
@@ -17,13 +19,15 @@ class Agent:
         self.default_value = settings["default_value"]
         self.discount_factor = settings["discount_factor"]
         self.learning_rate = settings["learning_rate"]
+        self.steps = 0
 
     def value(self, state, action):
         agent_pos = state.get_agent_pos()
-        if (state, action) in self.q_table.keys():
-            return self.q_table[(state, action)]
+        # Use agent position as the state representation in q_table instead of Maze object
+        if (agent_pos, action) in self.q_table.keys():
+            return self.q_table[(agent_pos, action)]
         else:
-            self.q_table[(state, action)] = self.default_value
+            self.q_table[(agent_pos, action)] = self.default_value
             return self.default_value
 
     def act(self, state):
@@ -35,6 +39,7 @@ class Agent:
         if len(valid_action_list) == 0:
             while True:
                 last_visited = state.visited_stack.pop()
+                self.steps += 1
                 # state.visited_set.remove(last_visited)
                 state.agent_pos = last_visited
                 valid_action_list = [
@@ -60,7 +65,10 @@ class Agent:
             0 if action[1] == 0 else -1 * action[1],
         )
 
-    def inf_walk(self, maze, verbose=True):
+    def inf_walk(self, maze: Maze, verbose=True):
+        self.steps = 0
+        discount_factor = self.discount_factor
+        rewards = []
         while not maze.is_end():
             if verbose:
                 print(
@@ -78,12 +86,25 @@ class Agent:
                 helper.log_error("action is None!")
             if verbose:
                 print("action: ", action)
+            self.steps += 1
             maze.update_visited(action)
-            reward = maze.step(action)  # don't use reward
-        if verbose:
-            print("agent reach end at ", maze.get_agent_pos())
+            reward = maze.step(action)
+            rewards.append(reward)
+            # don't learn
+        cof = 1
+        returns = 0
+        for i in range(len(rewards)):
+            returns += rewards[i] * cof
+            cof *= discount_factor
 
-    def walk(self, maze, verbose=False):
+        if verbose:
+            helper.log_success(
+                f"agent reach end at {maze.get_agent_pos()} after {self.steps} steps with return {returns}"
+            )
+        return returns
+
+    def walk(self, maze: Maze, verbose=False):
+        self.steps = 0
         discount_factor = self.discount_factor
         rewards = []
         while not maze.is_end():
@@ -94,20 +115,27 @@ class Agent:
                 helper.log_error("action is None!")
             if verbose:
                 print("action: ", action)
+            self.steps += 1
             maze.update_visited(action)
             reward = maze.step(action)
             rewards.append(reward)
-            self.learn(maze.state(), action, reward)
-        if verbose:
-            print("agent reach end at ", maze.get_agent_pos())
+            self.learn(maze.state(), action, reward, verbose)
+
         cof = 1
         returns = 0
         for i in range(len(rewards)):
             returns += rewards[i] * cof
             cof *= discount_factor
+
+        if verbose:
+            helper.log_success(
+                f"agent reach end at {maze.get_agent_pos()} after {self.steps} steps with return {returns}"
+            )
         return returns
 
-    def learn(self, state, action, reward):  # TODO understand Q-learning
+    def learn(
+        self, state, action, reward, verbose=False
+    ):  # TODO check # BUG can't learn at intermediate state
         """
         Update Q-values using the Q-learning algorithm
 
@@ -132,14 +160,19 @@ class Agent:
             max_next_q = 0
 
         # Get the learning rate from settings
-        alpha = 0.1  # Default value
-        if hasattr(self, "learning_rate"):
-            alpha = self.learning_rate
+        alpha = self.learning_rate
 
         # Calculate the new Q-value using the Q-learning formula
         new_q = current_q + alpha * (
             reward + self.discount_factor * max_next_q - current_q
         )
 
+        agent_pos = state.get_agent_pos()
+
+        if verbose:
+            helper.log_info(
+                f"q_table[({agent_pos}, {action}] = new_q = {new_q} = {current_q} + {alpha} * ({reward} + {self.discount_factor} * {max_next_q} - {current_q})"
+            )
+
         # Update the Q-table
-        self.q_table[(state, action)] = new_q
+        self.q_table[(agent_pos, action)] = new_q

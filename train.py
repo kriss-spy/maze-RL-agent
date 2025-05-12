@@ -1,17 +1,17 @@
 import helper
+from env import Maze
+from agent import Agent
 
 
-def train_agent(maze, agent, settings):
+def train_agent(maze: Maze, maze_agent: Agent, settings):  # TODO check
     """
     Train the agent using Q-learning
 
     Parameters:
     maze - The maze environment
-    agent_class - The Agent class (not instance)
+    agent - The Agent instance
     settings - Optional dictionary of settings
     """
-    # Initialize agent and settings if needed
-
     # Get number of episodes from settings, default to 1000
     episodes = settings["episodes"]
 
@@ -26,10 +26,11 @@ def train_agent(maze, agent, settings):
 
     for episode in range(episodes):
         # Reset maze to initial state for new episode
-        maze = maze.__class__(original_matrix, settings if settings else {})
+        # But keep the same agent instance to preserve the Q-table
+        maze = maze.__class__(original_matrix, settings)
 
         # Let the agent walk through the maze and learn
-        returns = agent.walk(maze)
+        returns = maze_agent.walk(maze)
 
         # Track best performance and calculate average
         if returns > best_returns:
@@ -42,10 +43,10 @@ def train_agent(maze, agent, settings):
             helper.log_info(
                 f"Episode {episode + 1}/{episodes} - Avg returns: {avg_returns:.2f}, Best: {best_returns:.2f}"
             )
+            helper.print_q_table(maze_agent.q_table)
 
     helper.log_success(
         f"Training complete! Final avg returns: {avg_returns:.2f}, Best: {best_returns:.2f}"
     )
-
     # Return the trained agent
-    return agent
+    return maze_agent

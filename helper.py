@@ -95,7 +95,8 @@ def print_hotkeys():
     hotkeys_table.add_row("a", "Auto run all steps")
     hotkeys_table.add_row("m", "Input customized maze")
     hotkeys_table.add_row("t", "Train agent")
-    hotkeys_table.add_row("d", "Show agent navigating the maze")
+    hotkeys_table.add_row("w", "Agent walk one turn with learning")
+    hotkeys_table.add_row("i", "Show agent navigating the maze")
     hotkeys_table.add_row("q", "Quit program")
 
     console.print(hotkeys_table)
@@ -286,4 +287,64 @@ def print_maze_matrix(maze):
                 styled_cells.append(f"[white]{cell}[/]")
         table.add_row(*styled_cells)
 
+    console.print(table)
+
+
+def print_q_table(q_table):
+    """Display the Q-table in a styled table format"""
+    from rich.table import Table
+
+    # Create a table
+    table = Table(title="Q-Table Values", show_header=True, box=rich.box.ROUNDED)
+
+    # Define action names for display
+    action_names = {(-1, 0): "Up", (0, 1): "Right", (1, 0): "Down", (0, -1): "Left"}
+
+    # Add columns for state and actions
+    table.add_column("State", style="cyan", justify="center")
+    table.add_column("Up", justify="right")
+    table.add_column("Right", justify="right")
+    table.add_column("Down", justify="right")
+    table.add_column("Left", justify="right")
+
+    # Group entries by state position
+    states = {}
+    for (pos, action), value in q_table.items():
+        if pos not in states:
+            states[pos] = {}
+        states[pos][action] = value
+
+    # No entries case
+    if not states:
+        console.print(table)
+        return
+
+    # Process each state
+    for pos in sorted(states.keys()):
+        actions = states[pos]
+        pos_str = f"({pos[0]},{pos[1]})"
+
+        # Values for each direction
+        up_val = actions.get((-1, 0), 0.0)
+        right_val = actions.get((0, 1), 0.0)
+        down_val = actions.get((1, 0), 0.0)
+        left_val = actions.get((0, -1), 0.0)
+
+        values = [up_val, right_val, down_val, left_val]
+
+        # Find maximum Q-value
+        max_q = max(values)
+
+        # Format values with highlighting
+        formatted_values = []
+        for value in values:
+            if value == max_q and value > 0:
+                formatted_values.append(f"[bold green]{value:.4f}[/]")
+            else:
+                formatted_values.append(f"{value:.4f}")
+
+        # Add the row
+        table.add_row(pos_str, *formatted_values)
+
+    # Print the table
     console.print(table)
