@@ -21,8 +21,8 @@ def main(
         "learning_rate": 0.1,  # alpha
         "discount_factor": 0.9,  # gamma
         "exploration_rate": 0.3,  # epsilon
-        "episodes": 1000,
-        "batch_size": 100,
+        "episodes": 10000,
+        "batch_size": 1000,
         "default_value": 0,
         "end_reward": 10,
     }
@@ -65,7 +65,7 @@ def main(
             # Auto run all steps
             helper.log_info("Auto-running all steps...")
             # Create fresh maze for auto run
-            train.train_agent(maze, agent)
+            train.train_agent(maze, agent, settings)
             maze_agent.inf_walk(maze)
 
         elif key == "m":
@@ -75,13 +75,13 @@ def main(
             helper.log_success("Custom maze created and set")
 
         elif key == "t":
-            # Train agent - placeholder for future implementation
+            # Train agent
             helper.print_header("Training Agent")
             helper.log_info("Agent training functionality will be implemented later")
-            train.train_agent(maze, agent, settings)
+            train.train_agent(maze, maze_agent, settings)
 
         elif key == "d":
-            # Show agent navigating the maze - placeholder for future implementation
+            # Show agent navigating the maze
             helper.print_header("Agent Navigation Demo")
             helper.log_info("Agent navigation demo will be implemented later")
             maze_agent.inf_walk(maze)

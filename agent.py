@@ -8,6 +8,7 @@ class Agent:
     exploration_rate = 0
     default_value = 0
     discount_factor = 0
+    learning_rate = 0
 
     def __init__(self, settings):
         self.action_list = [(-1, 0), (0, 1), (1, 0), (0, -1)]
@@ -15,6 +16,7 @@ class Agent:
         self.exploration_rate = settings["exploration_rate"]
         self.default_value = settings["default_value"]
         self.discount_factor = settings["discount_factor"]
+        self.learning_rate = settings["learning_rate"]
 
     def value(self, state, action):
         agent_pos = state.get_agent_pos()
@@ -24,7 +26,7 @@ class Agent:
             self.q_table[(state, action)] = self.default_value
             return self.default_value
 
-    def act(self, state):  # TODO check any bug
+    def act(self, state):
         agent_act = None
         rn = random.random()
         best_act = None
@@ -105,6 +107,39 @@ class Agent:
             cof *= discount_factor
         return returns
 
-    def learn(self, state, action, reward):
-        # TODO implement Agent.learn
-        pass
+    def learn(self, state, action, reward):  # TODO understand Q-learning
+        """
+        Update Q-values using the Q-learning algorithm
+
+        Parameters:
+        state - current state
+        action - action taken
+        reward - reward received
+        """
+        # Get the current Q-value for the state-action pair
+        current_q = self.value(state, action)
+
+        # Get the maximum Q-value for the next state
+        max_next_q = float("-inf")
+        for next_action in self.action_list:
+            if state.valid(next_action):
+                next_q = self.value(state, next_action)
+                if next_q > max_next_q:
+                    max_next_q = next_q
+
+        # If there are no valid actions from this state, set max_next_q to 0
+        if max_next_q == float("-inf"):
+            max_next_q = 0
+
+        # Get the learning rate from settings
+        alpha = 0.1  # Default value
+        if hasattr(self, "learning_rate"):
+            alpha = self.learning_rate
+
+        # Calculate the new Q-value using the Q-learning formula
+        new_q = current_q + alpha * (
+            reward + self.discount_factor * max_next_q - current_q
+        )
+
+        # Update the Q-table
+        self.q_table[(state, action)] = new_q
